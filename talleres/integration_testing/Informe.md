@@ -71,8 +71,10 @@ tests/test_storage_driver.py::test_storage_save_and_load PASSED          [100%]
 ## Evidencia de pruebas y versión
 - Tests ejecutados: `pytest -q tests/test_service_integration.py tests/test_storage_driver.py`
 - Resultado: `15 passed in 0.06s`
-- Rama local: `edwin_amaya`
-- Último commit: `b021fb5` con mensaje `edwin amaya: mejorar tests de integración y completar informe`
+- Rama final: `full_edwin_eleider_amaya_roa`
+- Rama experimental: `edwin_experiment_roto`
+- Último commit en la rama final: `7d5b4d5` con mensaje `docs: añadir evidencia de tests rotos y notas de rama`
+- Archivos de evidencia: `evidence/fixed_tests.txt`, `evidence/broken_tests.txt`, `evidence/branch_notes.txt`
 - Archivos temporales eliminados: `test_driver.json`, `test_tasks.json`
 
 ## Notas de entrega final
