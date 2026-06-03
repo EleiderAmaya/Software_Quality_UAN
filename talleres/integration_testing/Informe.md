@@ -68,6 +68,13 @@ tests/test_storage_driver.py::test_storage_save_and_load PASSED          [100%]
     - Rta: respuestas cortas, con el mismo estilo informal y explicando por qué.
 5. Organización:
     - Rta: rama debe ser `edwin_amaya`, commits claros, no subir archivos temporales ni tests ocultos.
+## Evidencia de pruebas y versión
+- Tests ejecutados: `pytest -q tests/test_service_integration.py tests/test_storage_driver.py`
+- Resultado: `15 passed in 0.06s`
+- Rama local: `edwin_amaya`
+- Último commit: `b021fb5` con mensaje `edwin amaya: mejorar tests de integración y completar informe`
+- Archivos temporales eliminados: `test_driver.json`, `test_tasks.json`
+
 ## Notas de entrega final
 - Rama: `edwin_amaya`.
 - Commits: mensajes simples pero claros, como “arreglé tests top-down y agregué casos extremos”.
