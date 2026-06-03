@@ -77,6 +77,13 @@ tests/test_storage_driver.py::test_storage_save_and_load PASSED          [100%]
 - Archivos de evidencia: `evidence/fixed_tests.txt`, `evidence/broken_tests.txt`, `evidence/branch_notes.txt`
 - Archivos temporales eliminados: `test_driver.json`, `test_tasks.json`
 
+## Proceso cronológico y evidencia
+1. Crear rama rota: `edwin_experiment_roto` con `src/service.py` saboteado para que `add_task()` devuelva True sin guardar ni notificar.
+2. Ejecutar tests en la rama rota y guardar salida en `evidence/broken_tests.txt`.
+3. Crear rama final limpia: `full_edwin_eleider_amaya_roa` desde la versión corregida.
+4. Ejecutar tests en la rama final y guardar salida en `evidence/fixed_tests.txt`.
+5. Añadir `evidence/branch_notes.txt` con los SHAs y nombres de ramas para dejar claro el flujo.
+
 ## Notas de entrega final
 - Rama: `edwin_amaya`.
 - Commits: mensajes simples pero claros, como “arreglé tests top-down y agregué casos extremos”.
