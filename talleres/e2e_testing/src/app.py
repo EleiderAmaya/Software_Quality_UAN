@@ -41,7 +41,8 @@ def index():
 @app.route("/tasks", methods=["POST"])
 def create_task():
     title = request.form.get("title", "").strip()
-    # Sabotaje controlado: no guardamos la tarea.
+    if title:
+        get_repo().add(title)
     return redirect(url_for("index"))
 
 

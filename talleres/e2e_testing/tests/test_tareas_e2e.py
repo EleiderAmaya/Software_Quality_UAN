@@ -44,6 +44,47 @@ class TestCrearTarea:
         # No verifica que la tarea realmente aparezca en la lista
 
 
+class TestCrearTareaFuerte:
+
+    def test_crear_tarea_muestra_titulo_en_lista(self, page):
+        titulo = "Tarea fuerte"
+        page.fill("[data-testid='input-titulo']", titulo)
+        page.click("[data-testid='btn-agregar']")
+        page.wait_for_selector("[data-testid='tarea-item']")
+
+        titulos = [texto.strip() for texto in page.locator("[data-testid='tarea-titulo']").all_text_contents()]
+        assert titulo in titulos
+
+    def test_completar_tarea_muestra_badge_completada(self, page):
+        titulo = "Tarea completa"
+        page.fill("[data-testid='input-titulo']", titulo)
+        page.click("[data-testid='btn-agregar']")
+        page.wait_for_selector("[data-testid='tarea-item']")
+
+        completar = page.locator("[data-testid='btn-completar']").first
+        assert completar.count() == 1
+        completar.click()
+        page.wait_for_selector("[data-testid='badge-completada']")
+
+        badge = page.locator("[data-testid='badge-completada']")
+        assert badge.count() == 1
+        assert badge.inner_text().strip() == "✓ Completada"
+
+    def test_eliminar_tarea_desaparece_de_lista(self, page):
+        titulo = "Tarea a eliminar"
+        page.fill("[data-testid='input-titulo']", titulo)
+        page.click("[data-testid='btn-agregar']")
+        page.wait_for_selector("[data-testid='tarea-item']")
+
+        eliminar = page.locator("[data-testid='btn-eliminar']").first
+        assert eliminar.count() == 1
+        eliminar.click()
+        page.wait_for_load_state("networkidle")
+
+        titulos = page.locator("[data-testid='tarea-titulo']").all_text_contents()
+        assert titulo not in titulos
+
+
 class TestCompletarTarea:
     """Pruebas débiles de completar tareas."""
 
