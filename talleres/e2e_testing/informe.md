@@ -34,3 +34,26 @@ Al ejecutar lo anterior las pruebas iniciales pasan correctamente.
 ### Respuesta (tono coloquial, universitario)
 
 No. Que los tests pasen no significa que lpruebe correctamente el flujo pueden haber falso positivos. Las pruebas actuales son mas validaciones rapidas: revisan que la página abra o que algunos elementos como selectores no lancen error, pero no comprueban que la tarea se guarde, si estan en la lista o si quedó realmente paso a un estado como completada. Hay validaciones indebidas ( `count() >= 0`) que basicamente siempre pasan, así que pueden dar falsos positivos: el test suena bien, pero no garantiza el comportamiento real.
+
+## Parte 2 — Análisis crítico de las pruebas
+
+━━━━━━━━━━━━━━━━━━
+
+1. ¿Qué está pasando con las pruebas actuales?
+   - Ahora mismo, los tests se quedan en la superficie: llenan el formulario y hacen clic en el botón, o simplemente validan que la página cargue. Sin embargo, no verifican si la tarea se guardó de verdad o si se muestra correctamente. Además, tenemos algunas aserciones muy débiles (como `count() >= 0`) que siempre van a pasar, lo que nos da falsos positivos que dice pasar y funcioanrcpero el app puede estar rota.
+
+2. Acciones del usuario que estamos ignorando (Puntos Ciegos)
+   - Confirmación visual y de contenido: que la tarea aparezca en la lista y que el texto coincida exactamente con lo que escribió el usuario (sin recortes ni errores).
+   - Persistencia: que la tarea siga ahí si el usuario recarga la página (guardado real en backend o JSON).
+   - Casos límite: qué pasa si intentan crear una tarea vacía, con títulos duplicados o con caracteres especiales.
+   - Flujos complementarios: validar que al eliminar una tarea desaparezca por completo (UI y almacenamiento), y que al completarla se note el cambio visual (tachado/badge) y se actualice su estado en el repositorio.
+   - Feedback: que los mensajes de error o validación realmente se le muestren al usuario cuando algo sale mal.
+
+3. Riesgos críticos en la UI que podrían pasarse por alto
+   - Tareas que se muestran en pantalla pero jamas almacena en el json
+   - Botones que recargan la página por error y borran el progreso del usuario.
+   - Selectores o `data-testid` mal hecho o erroneos que hagan que los tests busquen en el sitio equivocado.
+   - Acciones que afecten al elemento incorrecto (por ejemplo, querer borrar la tarea 1 y que se borre la 2).
+   - Problemas de estilos (ejemplo que no se vea algo, que este muy corrido elementos y sivualmente este no legible para las peronas) que impidan al usuario interactuar, aunque el backend funcione.
+
+💡 Conclusión - Las pruebas actuales sirven como defensa muy básica, pero no aseguran la calidad ni funcionamiento adecuado del producto.
