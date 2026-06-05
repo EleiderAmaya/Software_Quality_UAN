@@ -57,3 +57,52 @@ No. Que los tests pasen no significa que lpruebe correctamente el flujo pueden h
    - Problemas de estilos (ejemplo que no se vea algo, que este muy corrido elementos y sivualmente este no legible para las peronas) que impidan al usuario interactuar, aunque el backend funcione.
 
 💡 Conclusión - Las pruebas actuales sirven como defensa muy básica, pero no aseguran la calidad ni funcionamiento adecuado del producto.
+
+## Parte 3 — El lado oscuro de las pruebas E2E
+
+━━━━━━━━━━━━━━━━━━
+
+Sabotaje controlado
+
+Se modificó `src/app.py` en la ruta `create_task` para que haga solo el `redirect` a `/` y no llame a `repo.add()`. Desde el navegador la aplicación sigue respondiendo igual, pero la tarea deja de guardarse.
+
+### Evidencia de ejecución
+
+```bash
+pytest tests/test_tareas_e2e.py -v
+```
+
+Resultado real de la suite actual:
+
+```bash
+============================= test session starts ==============================
+platform darwin -- Python 3.13.5, pytest-9.0.3, pluggy-1.5.0 -- /opt/miniconda3/bin/python3.13
+cachedir: .pytest_cache
+rootdir: /Users/eleider/Software_Quality_UAN/talleres/e2e_testing
+plugins: mock-3.15.1, base-url-2.1.0, playwright-0.8.0, anyio-4.13.0
+collected 5 items
+
+tests/test_tareas_e2e.py::TestPaginaPrincipal::test_pagina_carga PASSED  [ 20%]
+tests/test_tareas_e2e.py::TestPaginaPrincipal::test_titulo_visible PASSED  [ 40%]
+tests/test_tareas_e2e.py::TestCrearTarea::test_formulario_presente PASSED  [ 60%]
+tests/test_tareas_e2e.py::TestCrearTarea::test_agregar_tarea_no_lanza_error PASSED [ 80%]
+tests/test_tareas_e2e.py::TestCompletarTarea::test_completar_tarea_no_lanza_error PASSED [100%]
+
+============================== 5 passed in 2.74s ===============================
+```
+
+### Respuestas
+
+¿Los tests detectaron el error?
+
+No, el error pasó completamente desapercibido y la suite de pruebas no saltó en ningún momento.
+
+¿Por qué siguen pasando?
+
+Porque las pruebas actuales solo se fijan en que la interacción termine sin colgarse y en que el navegador reciba la redirección a `/`. Como el endpoint modificado sigue devolviendo esa respuesta HTTP válida, el test asume que todo está perfecto y da luz verde. No comprueba si la tarea se guardó de verdad, si aparece en la lista o si los datos llegaron bien al backend. Con que la página no explote, el test se da por bien servido.
+
+¿Qué debilidad fundamental tienen estas pruebas E2E?
+
+Básicamente, son demasiado superficiales. Se quedan en evaluar la navegación y que los botones estén ahí, pero no revisan el comportamiento real del sistema. Miden si el formulario se puede rellenar y enviar, pero no si la aplicación hace algo útil con esa información.
+
+Esto deja al descubierto varios puntos críticos. Por ejemplo, nadie comprueba cómo queda el DOM después de mandar el formulario, ni se verifica si los datos se guardaron en el JSON o en el repositorio. Tampoco hay nada que nos asegure que el texto que sale en pantalla coincida con lo que el usuario escribió, ni se valida el ciclo completo de si la tarea quedó creada o completada.
