@@ -42,7 +42,11 @@ def index():
 def create_task():
     title = request.form.get("title", "").strip()
     if title:
-        get_repo().add(title)
+        try:
+            get_repo().add(title)
+        except ValueError:
+            # Validación del formulario: no crear tareas vacías o duplicadas.
+            pass
     return redirect(url_for("index"))
 
 
