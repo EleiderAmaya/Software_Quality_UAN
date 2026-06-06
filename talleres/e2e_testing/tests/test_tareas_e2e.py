@@ -62,6 +62,14 @@ class TestCasosExtremos:
         assert task_page.task_count() == 0
         assert task_page.has_empty_list_message()
 
+    def test_crear_tarea_con_espacios_vacios_no_agrega_nada(self, page):
+        task_page = TaskPage(page)
+
+        task_page.create_task("   ")
+
+        assert task_page.task_count() == 0
+        assert task_page.has_empty_list_message()
+
     def test_crear_tarea_duplicada_no_duplica_la_lista(self, page):
         task_page = TaskPage(page)
         titulo = "Tarea duplicada"
@@ -69,6 +77,7 @@ class TestCasosExtremos:
         task_page.create_task(titulo)
         task_page.create_task(titulo)
 
+        assert task_page.task_count() == 1
         assert task_page.task_titles() == [titulo]
 
     def test_lista_vacia_muestra_mensaje(self, page):
