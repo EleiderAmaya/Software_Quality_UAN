@@ -106,3 +106,19 @@ Porque las pruebas actuales solo se fijan en que la interacción termine sin col
 Básicamente, son demasiado superficiales. Se quedan en evaluar la navegación y que los botones estén ahí, pero no revisan el comportamiento real del sistema. Miden si el formulario se puede rellenar y enviar, pero no si la aplicación hace algo útil con esa información.
 
 Esto deja al descubierto varios puntos críticos. Por ejemplo, nadie comprueba cómo queda el DOM después de mandar el formulario, ni se verifica si los datos se guardaron en el JSON o en el repositorio. Tampoco hay nada que nos asegure que el texto que sale en pantalla coincida con lo que el usuario escribió, ni se valida el ciclo completo de si la tarea quedó creada o completada.
+
+## Parte 7 — Reflexión sobre pruebas E2E en CI/CD
+
+1. ¿Qué son los flaky tests y por qué son tan comunes en E2E?
+   - Los flaky tests son básicamente esas pruebas “inestables” que a veces pasan y a veces fallan, de la nada, sin que nadie haya tocado una sola línea de código. En las pruebas de extremo a extremo (E2E) esto pasa porque dependemos de muchas variables externas al mismo tiempo: la velocidad de la red, cómo reacciona el navegador, los tiempos de carga de la interfaz o el estado del sistema en ese segundo exacto.
+   - Un caso común es cuando el test intenta hacer clic en un botón que todavía no se ha terminado de renderizar o asume que una sección va a cargar en un tiempo fijo. En ese momento el servidor va un poco lento o el DOM tarda un milisegundo más en reaccionar, el test se rompe por completo, aunque la aplicación en realidad funcione bien.
+
+2. ¿Cómo garantizarías el aislamiento entre tests en una suite E2E?
+   - La regla de oro aquí es que cada prueba tiene que arrancar desde cero, con un escenario limpio y sin heredar la “basura” o los datos que dejó el test anterior. Por ejemplo, en esta suite lo resolvemos usando el fixture `page`, que se encarga de vaciar el repositorio de tareas antes de que empiece cada test corriendo un `POST /tasks/clear`. Así nos aseguramos de que ninguna prueba contamine a las demás.
+   - Además de esto, es clave trabajar con archivos de datos separados (como `data/tasks_test.json`) y no compartir cachés, sesiones ni almacenamiento temporal sin haberlos reiniciado antes.
+   - Al final, lo ideal es que cada test sea autosuficiente: que cree sus propios datos, haga sus propias comprobaciones y no dependa de que otra prueba haya creado algo previamente.
+
+3. ¿En qué casos usarías E2E en lugar de pruebas de integración?
+   - Dejaría las pruebas E2E para cuando necesito comprobar que todo el camino funciona bien, desde que el usuario hace clic en la pantalla hasta que el dato llega al backend, simulando la experiencia real de una persona real. Es la mejor opción para blindar los flujos más importantes de la app, como el ciclo completo de crear, marcar como hecho o borrar una tarea, porque ahí ves si todas las piezas encajan entre sí.
+   - Como los tests E2E son bastante más lentos y fáciles de romper que las pruebas de integración, no hay que abusar de ellos. Hay que reservarlos para los flujos vitales del negocio y delegar los escenarios más pequeños, específicos o lógicos a las pruebas de integración, que corren más rápido.
+   - En conclución: E2E para validar la experiencia de usuario completa; integración para asegurarse de que la lógica interna y los componentes del backend se entienden correctamente.
